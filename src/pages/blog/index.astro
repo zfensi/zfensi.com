@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../../components/ArticleCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getDateArchiveUrl, getDateArchives, getTagsUrl, sortPosts } from '../../lib/blog';
+
+const posts = sortPosts(await getCollection('blog'));
+const dateArchives = getDateArchives(posts);
+const monthGroups = [...dateArchives.reduce((groups, archive) => {
+  const monthKey = archive.dateKey.slice(0, 7);
+  const bucket = groups.get(monthKey) ?? [];
+  bucket.push(archive);
+  groups.set(monthKey, bucket);
+  return groups;
+}, new Map<string, typeof dateArchives>()).entries()]
+  .sort(([left], [right]) => right.localeCompare(left))
+  .map(([monthKey, archives]) => {
+    const [year, month] = monthKey.split('-').map(Number);
+    const monthDate = new Date(Date.UTC(year, month - 1, 1));
+    const totalDays = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const archiveByDay = new Map(archives.map((archive) => [Number(archive.dateKey.slice(8, 10)), archive]));
+
+    return {
+      monthKey,
+      monthLabel: new Intl.DateTimeFormat('zh-CN', {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(monthDate),
+      leadingEmpty: monthDate.getUTCDay(),
+      days: Array.from({ length: totalDays }, (_, index) => {
+        const day = index + 1;
+        return {
+          day,
+          archive: archiveByDay.get(day),
+        };
+      }),
+    };
+  });
+const weekdayLabels = ['日', '一', '二', '三', '四', '五', '六'];
+---
+
+<BaseLayout title="文章中心" description="浏览站内文章、标签与归档日历。" canonicalPath="/blog.html">
+  <section class="hero section-stack">
+    <p class="section-note">Blog Archive</p>
+    <h1 class="page-title">文章中心</h1>
+    <p class="page-intro">集中浏览最新文章，也可以通过 <a href={getTagsUrl()}>标签页</a> 或日期归档快速定位内容。</p>
+  </section>
+
+  <section id="calendar" class="panel section-stack" hidden>
+    <div>
+      <p class="section-note">Publishing Calendar</p>
+      <h2>发布归档</h2>
+      <p class="page-intro">按日期查看文章发布情况，点击高亮日期即可进入该日归档页面。</p>
+    </div>
+
+    <div class="calendar-months">
+      {monthGroups.map((month) => (
+        <section class="calendar-month">
+          <h3>{month.monthLabel}</h3>
+          <div class="calendar-weekdays" aria-hidden="true">
+            {weekdayLabels.map((label) => <span>{label}</span>)}
+          </div>
+          <div class="calendar-grid">
+            {Array.from({ length: month.leadingEmpty }).map(() => <span class="calendar-day calendar-day--empty"></span>)}
+            {month.days.map(({ day, archive }) =>
+              archive ? (
+                <a class="calendar-day calendar-day--active" href={getDateArchiveUrl(archive.dateKey)}>
+                  <span class="calendar-day__number">{day}</span>
+                  <span class="calendar-day__count">{archive.count} 篇</span>
+                </a>
+              ) : (
+                <div class="calendar-day">
+                  <span class="calendar-day__number">{day}</span>
+                </div>
+              ),
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <script is:inline>
+    const calendarSection = document.getElementById('calendar');
+    const calendarToggleLinks = document.querySelectorAll('a[data-calendar-toggle]');
+
+    if (calendarSection && calendarToggleLinks.length) {
+      const syncCalendarState = (expanded) => {
+        calendarSection.hidden = !expanded;
+        calendarToggleLinks.forEach((link) => {
+          link.setAttribute('aria-expanded', String(expanded));
+        });
+      };
+
+      const openCalendar = () => {
+        syncCalendarState(true);
+        calendarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}#calendar`);
+      };
+
+      const closeCalendar = () => {
+        syncCalendarState(false);
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+      };
+
+      syncCalendarState(window.location.hash === '#calendar');
+
+      calendarToggleLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          const targetUrl = new URL(link.href, window.location.href);
+          const samePage = targetUrl.pathname === window.location.pathname;
+
+          if (!samePage) {
+            return;
+          }
+
+          event.preventDefault();
+
+          if (calendarSection.hidden) {
+            openCalendar();
+          } else {
+            closeCalendar();
+          }
+        });
+      });
+
+      window.addEventListener('hashchange', () => {
+        syncCalendarState(window.location.hash === '#calendar');
+      });
+    }
+  </script>
+
+  <section class="grid grid--cards">
+    {posts.map((post) => <ArticleCard post={post} />)}
+  </section>
+</BaseLayout>

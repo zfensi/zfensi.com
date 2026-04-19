@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import BlogSidebar from '../components/BlogSidebar.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sortPosts } from '../lib/blog';
+
+const posts = sortPosts(await getCollection('blog'));
+---
+
+<BaseLayout title="内容侧栏" description="查看站内分类、标签与最新文章导航。" canonicalPath="/sidebar.html">
+  <section class="hero">
+    <p class="section-note">Sidebar</p>
+    <h1 class="page-title">内容侧栏</h1>
+  </section>
+
+  <BlogSidebar posts={posts} />
+</BaseLayout>

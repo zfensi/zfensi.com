@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTagUrl, getTagsUrl, sortPosts } from '../../lib/blog';
+
+const posts = sortPosts(await getCollection('blog'));
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))]
+  .map((tag) => ({
+    tag,
+    count: posts.filter((post) => post.data.tags.includes(tag)).length,
+  }))
+  .sort((left, right) => right.count - left.count || left.tag.localeCompare(right.tag));
+---
+
+<BaseLayout
+  title="全部标签"
+  description="浏览站内文章使用的全部标签。"
+  canonicalPath={getTagsUrl()}
+>
+  <section class="hero">
+    <p class="section-note"><a href="/blog.html">文章</a> / 标签</p>
+    <h1 class="page-title">全部标签</h1>
+    <p class="page-intro">当前共有 {tags.length} 个标签，覆盖 {posts.length} 篇文章。</p>
+  </section>
+
+  <section class="panel section-stack">
+    <div class="tag-list" aria-label="全部标签">
+      {tags.map(({ tag, count }) => (
+        <a class="tag" href={getTagUrl(tag)}>
+          #{tag} ({count})
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

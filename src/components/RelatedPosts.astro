@@ -1,0 +1,23 @@
+---
+import type { BlogEntry } from '../lib/blog';
+import { getPostUrl } from '../lib/blog';
+
+interface Props {
+  posts: BlogEntry[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="related-posts">
+    <h2>相关文章</h2>
+    <ul>
+      {posts.map((post) => (
+        <li>
+          <a href={getPostUrl(post)}>{post.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

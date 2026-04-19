@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { getCategoryUrl, sortPosts, type BlogEntry } from '../../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = sortPosts(await getCollection('blog'));
+  const categories = [...new Set(posts.map((post) => post.data.category))];
+
+  return categories.map((category) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts.filter((post) => post.data.category === category),
+    },
+  }));
+}
+
+interface Props {
+  category: string;
+  posts: BlogEntry[];
+}
+
+const { category, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`分类：${category}`}
+  description={`${category} 分类下的文章归档页面。`}
+  canonicalPath={getCategoryUrl(category)}
+>
+  <section class="hero">
+    <p class="section-note">Category Archive</p>
+    <h1 class="page-title">{category}</h1>
+  </section>
+
+  <section class="grid grid--cards">
+    {posts.map((post) => <ArticleCard post={post} />)}
+  </section>
+</BaseLayout>

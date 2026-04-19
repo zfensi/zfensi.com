@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../components/ArticleCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sortPosts } from '../lib/blog';
+import blogConfig from '../../blog.config.mjs';
+
+const posts = sortPosts(await getCollection('blog'));
+const featuredPosts = posts.slice(0, 6);
+const categories = [...new Set(posts.map((post) => post.data.category))];
+---
+
+<BaseLayout title={blogConfig.siteName} description={blogConfig.description} canonicalPath="/">
+  <section class="hero section-stack">
+    <p class="eyebrow">ZFensi</p>
+    <div class="hero-copy section-stack">
+      <h1>ZFensi 社交媒体增长内容站</h1>
+      <p class="page-intro">
+        当前项目聚焦社交媒体增长、内容策略与平台观察，现已统一整理文章展示、内容归档、标签检索与信息页面，
+        同时以更稳重的大面积深色配色和高层次卡片布局提升整体质感。
+      </p>
+    </div>
+    <div class="hero-actions">
+      <a class="button" href="/blog.html">浏览文章</a>
+      <a class="button-secondary" href="/search.html">站内搜索</a>
+      <a class="button-secondary" href="/about.html">了解站点</a>
+    </div>
+    <section class="stats-grid grid">
+      <article>
+        <strong>{posts.length}</strong>
+        <span>已收录文章</span>
+      </article>
+      <article>
+        <strong>{categories.length}</strong>
+        <span>主题分类</span>
+      </article>
+      <article>
+        <strong>100%</strong>
+        <span>静态输出</span>
+      </article>
+      <article>
+        <strong>SEO</strong>
+        <span>图标与元信息已接入</span>
+      </article>
+    </section>
+  </section>
+
+  <section class="grid grid--cards">
+    {featuredPosts.map((post) => <ArticleCard post={post} />)}
+  </section>
+
+  <section class="grid grid--cards">
+    <article class="resource-panel">
+      <p class="section-note">官方入口</p>
+      <h2>站点资源矩阵</h2>
+      <p>
+        保留当前项目中已经整理的官网、镜像与外部内容入口，统一展示现有资源，方便后续继续扩展专题内容与品牌页面。
+      </p>
+      <div class="resource-links">
+        <a class="pill" href="https://www.zfensi.com/" target="_blank" rel="noopener noreferrer">官网</a>
+        <a class="pill" href="https://zfensi.vercel.app/" target="_blank" rel="noopener noreferrer">Vercel 镜像</a>
+        <a class="pill" href="https://zfensi.weebly.com" target="_blank" rel="noopener noreferrer">Weebly 站点</a>
+      </div>
+    </article>
+
+    <article class="resource-panel">
+      <p class="section-note">内容扩展</p>
+      <h2>后续可持续扩展</h2>
+      <p>
+        现在已经具备文章详情页、分类页、标签页、日期归档页、搜索页、站点地图和 robots，后续只需新增 Markdown 文章即可持续发布。
+      </p>
+      <div class="resource-links">
+        <a class="pill" href="/blog/tags.html">查看标签</a>
+        <a class="pill" href="/sidebar.html">内容侧栏</a>
+        <a class="pill" href="/sitemap.xml">查看 Sitemap</a>
+      </div>
+    </article>
+  </section>
+</BaseLayout>

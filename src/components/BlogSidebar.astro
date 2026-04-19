@@ -1,0 +1,70 @@
+---
+import type { BlogEntry } from '../lib/blog';
+import { getCategoryUrl, getPostUrl, getTagUrl, getTagsUrl, groupPostsByCategory, sortPosts } from '../lib/blog';
+
+interface Props {
+  posts: BlogEntry[];
+  currentPost?: BlogEntry;
+}
+
+const { posts, currentPost } = Astro.props;
+const categoryGroups = Object.entries(groupPostsByCategory(sortPosts(posts)));
+const recentPosts = sortPosts(posts).slice(0, 8);
+const tagCounts = [...new Set(posts.flatMap((post) => post.data.tags))]
+  .map((tag) => ({
+    tag,
+    count: posts.filter((post) => post.data.tags.includes(tag)).length,
+  }))
+  .sort((left, right) => right.count - left.count || left.tag.localeCompare(right.tag))
+  .slice(0, 12);
+---
+
+<aside class="sidebar section-stack">
+  <section>
+    <h2>内容导航</h2>
+  </section>
+
+  <section>
+    <h2>分类</h2>
+    <div class="category-group section-stack">
+      {categoryGroups.map(([category, entries]) => (
+        <div>
+          <a href={getCategoryUrl(category)}>{category}</a>
+          <ul>
+            {entries.slice(0, 5).map((entry) => (
+              <li>
+                <a href={getPostUrl(entry)} aria-current={currentPost?.id === entry.id ? 'page' : undefined}>
+                  {entry.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2><a href={getTagsUrl()}>全部标签</a></h2>
+    <div class="tag-list" aria-label="热门标签">
+      {tagCounts.map(({ tag, count }) => (
+        <a class="tag" href={getTagUrl(tag)}>
+          #{tag} ({count})
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>最新文章</h2>
+    <ul>
+      {recentPosts.map((entry) => (
+        <li>
+          <a href={getPostUrl(entry)} aria-current={currentPost?.id === entry.id ? 'page' : undefined}>
+            {entry.data.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</aside>

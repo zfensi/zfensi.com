@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import blogConfig from '../../blog.config.mjs';
+---
+
+<BaseLayout
+  title="关于我们"
+  description="了解 ZFensi 站点定位、内容方向与更新方式。"
+  canonicalPath="/about.html"
+>
+  <section class="hero section-stack">
+    <p class="section-note">About</p>
+    <h1 class="page-title">关于我们</h1>
+    <p class="page-intro">
+      {blogConfig.siteName}
+      是围绕社交媒体增长、内容定位与平台观察整理的内容站点，当前重点覆盖 Instagram、TikTok、Telegram 等主题。
+    </p>
+  </section>
+
+  <article class="article-shell">
+    <h2>站点定位</h2>
+    <p>
+      当前项目围绕文章、归档、标签、搜索、SEO 和站点信息页建立了统一结构，便于后续持续维护、补充内容与扩展页面。
+    </p>
+
+    <h2>内容范围</h2>
+    <p>
+      站内文章主要聚焦平台增长逻辑、内容策略、账号定位、受众匹配和运营思路，强调对平台机制的理解，而不是只堆砌短期技巧。
+    </p>
+
+    <h2>更新方式</h2>
+    <p>
+      后续只需在 `src/content/blog` 中新增 Markdown 文章，站点会自动生成对应详情页、分类页、标签页和搜索索引，无需手工维护静态链接。
+    </p>
+  </article>
+</BaseLayout>

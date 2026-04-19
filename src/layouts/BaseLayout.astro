@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import blogConfig from '../../blog.config.mjs';
+import SeoHead from '../components/SeoHead.astro';
+import { getCalendarUrl, getCategoryUrl, getTagsUrl, sortPosts } from '../lib/blog';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  imagePath?: string;
+  pageType?: 'website' | 'article';
+}
+
+const { title, description, canonicalPath, imagePath, pageType = 'website' } = Astro.props;
+const posts = sortPosts(await getCollection('blog'));
+const categories = [...new Set(posts.map((post) => post.data.category))];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <SeoHead
+      title={title}
+      description={description}
+      canonicalPath={canonicalPath}
+      imagePath={imagePath}
+      type={pageType}
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__stack">
+        <div class="site-header__inner">
+          <a class="site-brand" href="/">
+            <span class="site-brand__mark">ZF</span>
+            <span class="site-brand__text">
+              <strong>{blogConfig.siteName}</strong>
+              <span>Social Media Growth Journal</span>
+            </span>
+          </a>
+          <nav class="site-nav" aria-label="Primary">
+            <a href="/blog.html">文章</a>
+            <a href={getCalendarUrl()} data-calendar-toggle aria-controls="calendar" aria-expanded="false">归档</a>
+            <a href="/search.html">搜索</a>
+            <a href={getTagsUrl()}>标签</a>
+            <a href="/about.html">关于</a>
+            <a href="/contact.html">联系</a>
+          </nav>
+        </div>
+        <form class="site-search" action="/search.html" method="get" role="search">
+          <label class="sr-only" for="site-search-input">搜索文章</label>
+          <input
+            id="site-search-input"
+            name="q"
+            type="search"
+            placeholder="搜索标题、标签与正文"
+            autocomplete="off"
+          />
+          <button type="submit">搜索</button>
+        </form>
+        <nav class="site-category-nav" aria-label="Categories">
+          {categories.map((category) => <a href={getCategoryUrl(category)}>{category}</a>)}
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <div class="footer-copy">
+          <strong>{blogConfig.siteName}</strong>
+          <p class="footer-note">
+            聚焦 Instagram、TikTok、Telegram 等平台的增长认知、内容策略与运营观察，以更清晰的主题结构整理当前项目内容。
+          </p>
+        </div>
+        <div class="footer-link-groups">
+          <nav class="footer-nav" aria-label="Footer primary">
+            <span class="footer-nav__title">Explore</span>
+            <a href="/blog.html">文章列表</a>
+            <a href="/search.html">站内搜索</a>
+            <a href={getTagsUrl()}>全部标签</a>
+            <a href="/sidebar.html">内容侧栏</a>
+            <a href="/sitemap.xml">站点地图</a>
+          </nav>
+          <nav class="footer-nav" aria-label="Footer trust">
+            <span class="footer-nav__title">Trust</span>
+            <a href="/about.html">关于我们</a>
+            <a href="/editorial-policy.html">编辑政策</a>
+            <a href="/contact.html">联系入口</a>
+            <a href="/privacy-policy.html">隐私政策</a>
+            <a href="/disclaimer.html">免责声明</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#081426" />
+      <stop offset="55%" stop-color="#0d2240" />
+      <stop offset="100%" stop-color="#132b4d" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c8dff" />
+      <stop offset="100%" stop-color="#f4c168" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1030" cy="120" r="170" fill="#133563" opacity="0.55" />
+  <circle cx="1110" cy="520" r="220" fill="#0c1b31" opacity="0.9" />
+  <rect x="84" y="88" width="170" height="170" rx="38" fill="url(#accent)" />
+  <text x="169" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="78" font-weight="800" fill="#081426">ZF</text>
+  <text x="84" y="350" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="800" fill="#ecf3ff">ZFensi</text>
+  <text x="84" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="34" fill="#9fb2cc">
+    Social Media Growth Journal
+  </text>
+  <text x="84" y="492" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#7dc4ff">
+    Social media insights, archives, search and brand content pages.
+  </text>
+</svg>
