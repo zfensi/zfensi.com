@@ -1,7 +1,7 @@
 {
-  "name": "ZFensi",
-  "short_name": "ZFensi",
-  "description": "ZFensi 社交媒体增长内容站",
+  "name": "zfensi",
+  "short_name": "zfensi",
+  "description": "zfensi 社交媒体增长站",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#081426",
