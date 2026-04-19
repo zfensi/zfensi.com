@@ -5,7 +5,7 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const blogConfig = {
   siteName: 'ZFensi',
-  siteUrl: 'https://www.zfensi.com',
+  siteUrl: 'https://zfensi.vercel.app',
   description:
     'zfensi 聚焦 Instagram、TikTok、Telegram 等社交媒体增长话题，整理平台认知、内容策略与实操观察。',
   defaultOgImage: '/og-cover.svg',
